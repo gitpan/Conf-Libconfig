@@ -1,22 +1,55 @@
-use ExtUtils::MakeMaker;
-$Verbose = 1;
+use strict;
+use lib '.';
+use inc::Module::Install;
 
-$CC = 'g++';
+name				'Conf-Libconfig';
+license				'bsd';
+author				'cnangel <junliang.li@alibaba-inc.com>';
+perl_version        '5.006001';
+all_from			'lib/Conf/Libconfig.pm';
 
-# See lib/ExtUtils/MakeMaker.pm for details of how to influence
-# the contents of the Makefile that is written.
-WriteMakefile(
-    'NAME'	=> 'Conf::Libconfig',
-    'VERSION_FROM' => 'Libconfig.pm', # finds $VERSION
-    'LIBS'	=> ['-lconfig++'],   # e.g., '-lm' 
-    'DEFINE'	=> '',     # e.g., '-DHAVE_SOMETHING' 
-    'INC'	=> '-I/usr/include',     # e.g., '-I/usr/include/other' 
-    'CC'	=> $CC,
-    'LD'	=> '$(CC)',
-#	'LD_RUN_PATH'	=> '/usr/lib64',
-#    'LINKTYPE'	=> 'static',
-    'XSPROTOARG'	=> '-noprototypes',
-	'XSOPT'            => '-C++',
-    'TYPEMAPS'	=> ['perlobject.map' ],
-    'realclean'	=> {'FILES' => 'perl'},
-);
+requires			'ExtUtils::XSBuilder' => 0;
+requires			'Cwd' => 1.00;
+requires			'File::Find' => 1.00;
+requires			'XSLoader' => 0.05;
+
+build_requires      'Test::Base' => '0.01';
+
+#test_requires		'Test::Pod::Coverage' => '0';
+
+#makemaker_args       CC    => 'g++';
+#makemaker_args       LD    => 'g++';
+#makemaker_args       XSOPT => '-C++';
+
+cc_inc_paths		'/usr/include', '/usr/local/include';
+#cc_files			(glob("./src/*.c"));
+cc_lib_paths		'/usr/lib' , '/usr/lib64', '/usr/local/lib', '/usr/local/lib64';
+#cc_lib_links		'config', 'config++';
+cc_lib_links		'config';
+can_cc				or die 'This module requires C compiler.';
+#can_cc              or die 'This module requires C++ compiler.';
+#cc_optimize_flags	'-g -Wall';
+
+#use_test_base;
+
+#auto_include_deps;
+
+#no_index			( directory => qw< t inc xs xsbuilder src > );
+no_index			( directory => qw< t inc src > );
+
+#install_script      ('bin/ParseSource.pl');
+#install_script      ('bin/WrapXSCheck.pl');
+#install_script      ('bin/WrapXSRun.pl');
+
+auto_install();
+
+WriteAll();
+
+#package MY;
+#sub c_o
+#{
+	#my $src = shift->SUPER::c_o(@_);
+	#my ($from, $to) = ('$(DEFINE) $*.', '$(DEFINE) -o $@ $*.');
+	#$src =~ s{\Q$from\E}{$to}gxms;
+	#return $src;
+#}
