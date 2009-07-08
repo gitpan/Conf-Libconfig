@@ -1,0 +1,3 @@
+TYPEMAP
+Config *		O_OBJECT
+LibConfig *		O_OBJECT
