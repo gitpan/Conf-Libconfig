@@ -21,9 +21,12 @@ README
 t/00-load.t
 t/01-init.t
 t/02-read.t
+t/03-write.t
+t/04-spec.t
 t/boilerplate.t
 t/pod-coverage.t
 t/pod.t
+t/spec.cfg
 t/test.cfg
 tools/Conf/Libconfig/ParseSource.pm
 tools/Conf/Libconfig/WrapXS.pm
