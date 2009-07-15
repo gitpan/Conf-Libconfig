@@ -1,14 +1,29 @@
 #!perl -T
-
 use strict;
 use warnings;
 use Data::Dumper;
-use Test::More tests => 1;
+use Test::More tests => 2;
 
 use Conf::Libconfig;
 
 my $cfgfile = "./t/test.cfg";
-my $foo = new Conf::Libconfig;
-my $r = $foo->read_file($cfgfile);
-ok($r, "read file - status ok");
+my $writecfgfile = "./t/newtest.cfg";
+my $foo = Conf::Libconfig->new;
+open my $fp, '>', $writecfgfile or die "Can't write the file: $!";
 
+TODO: {
+local $TODO = 'write* methods do not work yet';
+
+eval { $foo->write($fp) };
+ok(($@ ? 0 : 1), "write buffer - status ok");
+
+is(
+    $foo->write_file($writecfgfile),
+    1,
+    "write file - status ok",
+);
+
+}
+
+close($fp);
+unlink $writecfgfile;
