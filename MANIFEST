@@ -25,7 +25,7 @@ t/02-read.t
 t/03-write.t
 t/04-spec.t
 t/boilerplate.t
-t/no-tabs.t
+t/no-tabs.t.txt
 t/pod-coverage.t
 t/pod.t
 t/spec.cfg

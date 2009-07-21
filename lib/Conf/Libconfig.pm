@@ -4,7 +4,7 @@ use 5.006001;
 use strict;
 use warnings;
 
-our $VERSION = '0.006';
+our $VERSION = '0.007';
 
 require XSLoader;
 XSLoader::load('Conf::Libconfig', $VERSION);
@@ -72,6 +72,26 @@ return array list from path.
 =head2 $self->fetch_hashref ($path)
 
 return hash refenrece from path.
+
+=head2 $self->add_scalar ($scalar)
+
+add scalar value to handle and return true if add succssfully.
+
+=head2 $self->add_array (\@array)
+
+add array value to handle and return true if add succssfully.
+
+=head2 $self->add_list (\@list)
+
+the same as B<add_array>, add list value to handle and return true if add succssfully.
+
+=head2 $self->add_hash (\%hash)
+
+add hash value to handle and return true if add succssfully.
+
+=head2 $self->delete_node ($path)
+
+return true if delete node or path succssfully.
 
 =head2 $setting->length ()
 
