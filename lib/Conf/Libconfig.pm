@@ -4,13 +4,14 @@ use 5.006001;
 use strict;
 use warnings;
 
-our $VERSION = '0.007';
+our $VERSION = '0.008';
 
 require XSLoader;
 XSLoader::load('Conf::Libconfig', $VERSION);
 
 1;
 __END__
+
 =head1 NAME
 
 Conf::Libconfig - Perl extension for libconfig
@@ -22,15 +23,18 @@ Conf::Libconfig - Perl extension for libconfig
   $self->read_file($cfg);
   my $value = $self->lookup_value("abc.edf");
   print $value;
+
+  use Data::Dumper;
+  my $arrayref = $self->fetch_array("cdef.abcd.arrayref");
+  print Dumper $arrayref;
+  my $hashref = $self->fetch_hashref("cdef.abcd.hashref");
+  print Dumper $hashref;
+
   $self->delete();
 
 =head1 DESCRIPTION
 
-The module C<Conf::Libconfig> need use libconfig library:
-
-    http://www.hyperrealm.com/libconfig/
-
-You can use C<Conf::Libconfig> for perl config, and support Salar, Array and Hash data struction etc.
+You can use C<Conf::Libconfig> for perl config, and support Scalar, Array and Hash data structures etc.
 like C or C++ function. C<Conf::Libconfig> could reduce your config file and quote by C/C++ transportability.
 
 =head2 EXPORT
@@ -59,7 +63,7 @@ write to a file.
 
 =head2 $self->lookup_value ($path)
 
-Autocheck and get value from config file, suggest use it.
+Automatically check and get value from config file, suggest use it.
 
 =head2 $self->setting_lookup ($path)
 
@@ -71,27 +75,27 @@ return array list from path.
 
 =head2 $self->fetch_hashref ($path)
 
-return hash refenrece from path.
+return hash reference from path.
 
-=head2 $self->add_scalar ($scalar)
+=head2 $self->add_scalar ($path, $scalar)
 
-add scalar value to handle and return true if add succssfully.
+add scalar value to handle and return true if add successfully.
 
-=head2 $self->add_array (\@array)
+=head2 $self->add_array ($path, \@array)
 
-add array value to handle and return true if add succssfully.
+add array value to handle and return true if add successfully.
 
-=head2 $self->add_list (\@list)
+=head2 $self->add_list ($path, \@list)
 
-the same as B<add_array>, add list value to handle and return true if add succssfully.
+the same as B<add_array>, add list value to handle and return true if add successfully.
 
-=head2 $self->add_hash (\%hash)
+=head2 $self->add_hash ($path, \%hash)
 
-add hash value to handle and return true if add succssfully.
+add hash value to handle and return true if add successfully.
 
 =head2 $self->delete_node ($path)
 
-return true if delete node or path succssfully.
+return true if delete node or path successfully.
 
 =head2 $setting->length ()
 
@@ -123,40 +127,8 @@ Only get value type of string from config file, please use lookup_value replace 
 
 =head1 PREREQUISITES
 
-This module uses libconfig.
-
-=head1 INSTALLATION
-
-To prepare install, you should install libconfig, you can use yum for redhat,
-like this:
-
-    yum install libconfig libconfig-devel -y
-
-or apt-get for debian:
-
-    apt-get libconfig libconfig-devel
-
-for other platform, you can compiler libconfig from source:
-
-    http://www.hyperrealm.com/libconfig/
-
-you can use order like this:
-
-    wget http://www.hyperrealm.com/libconfig/libconfig-1.3.2.tar.gz
-    tar -zxf libconfig-1.3.2.tar.gz
-    cd libconfig-1.3.2
-    ./configure --prefix=/usr
-    make
-    make install
-
-If you are not soudoer or root, you need contact administrator.
-
-    perl Makefile.PL
-    make
-    make test
-    make install
-
-Win32 users should replace "make" with "nmake".
+This module requires the libconfig library from
+L<http://www.hyperrealm.com/libconfig/>.
 
 =head1 SOURCE CONTROL
 
@@ -167,7 +139,7 @@ public Git repository:
 
 If you have a branch for me to pull, please let me know ;)
 
-=head1 TODO
+=head1 TO DO
 
 =over
 
