@@ -4,7 +4,7 @@ use 5.006001;
 use strict;
 use warnings;
 
-our $VERSION = '0.008';
+our $VERSION = '0.009';
 
 require XSLoader;
 XSLoader::load('Conf::Libconfig', $VERSION);
@@ -77,25 +77,37 @@ return array list from path.
 
 return hash reference from path.
 
-=head2 $self->add_scalar ($path, $scalar)
+=head2 $self->add_scalar ($path, $key, $value)
 
-add scalar value to handle and return true if add successfully.
+add a pair of key and value node to handle and return true if add successfully.
 
-=head2 $self->add_array ($path, \@array)
+=head2 $self->modify_scalar ($path, $value)
+
+modify new value to handle and return true if add successfully.
+
+=head2 $self->add_array ($path, $key, \@array)
 
 add array value to handle and return true if add successfully.
 
-=head2 $self->add_list ($path, \@list)
+=head2 $self->add_list ($path, $key, \@list)
 
 the same as B<add_array>, add list value to handle and return true if add successfully.
 
-=head2 $self->add_hash ($path, \%hash)
+=head2 $self->add_hash ($path, $key, \%hash)
 
 add hash value to handle and return true if add successfully.
 
 =head2 $self->delete_node ($path)
 
-return true if delete node or path successfully.
+return true if delete node of path successfully.
+
+=head2 $self->delete_node_key ($path, $key)
+
+return true if delete node key of path successfully.
+
+=head2 $self->delete_node_elem ($path, $idx)
+
+return true if delete node element of path successfully.
 
 =head2 $setting->length ()
 
@@ -104,6 +116,10 @@ return count of setting resource.
 =head2 $setting->get_item ($i)
 
 return value of the $i item.
+
+=head2 $setting->get_type ()
+
+return value type of setting resource.
 
 =head2 $self->lookup_bool ($path)
 
