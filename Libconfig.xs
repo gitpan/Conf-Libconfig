@@ -97,7 +97,7 @@ set_scalar_elem(config_setting_t *settings, int idx, SV *value, int valueType, i
 void
 set_array(config_setting_t *settings, AV *value, int *status)
 {
-	SV *sv = newSV(0);
+	SV *sv;// = newSV(0);
 	int valueMaxIndex;
 	int i;
 	int type;
@@ -131,7 +131,7 @@ set_hash(config_setting_t *settings, HV *value, int *status)
 	char *key;
 	int elemStatus;
 	int allStatus;
-	SV* sv = newSV(0);
+	SV* sv;// = newSV(0);
 
 	allStatus = 1;
 	hv_iterinit(value);
@@ -171,11 +171,12 @@ set_scalarvalue(config_setting_t *settings, const char *key, SV *value, int flag
 			else {
 				size_t nameLength = strlen(settings->name);
 				char *name = (char *)malloc(nameLength + 1);
+				if (!name) Perl_croak(aTHX_ "[ERROR] malloc is fail!!");
 				strncpy(name, settings->name, nameLength);
 				name[nameLength] = 0;
 				remove_scalar_node(settings_parent, settings->name, settings->type, &returnStatus);
 				set_scalarvalue(settings_parent, name, value, 0);
-				free(name);
+				if (name) free(name);
 			}
 			break;
 		default:
@@ -289,6 +290,8 @@ get_value(Conf__Libconfig conf, const char *path, SV **svref)
 	else if (config_lookup_int64(conf, path, &valueBigint)) {
 		valueBigintArrLen = sprintf(valueBigintArr, "%lld", valueBigint);
 		*svref = newSVpv(valueBigintArr, valueBigintArrLen);
+	} else {
+		*svref = newSV(0);
 	}
 }
 
@@ -323,6 +326,7 @@ get_scalar(config_setting_t *settings, SV **svref)
             *svref = newSVpvn(vChar, strlen(vChar));
             break;
         default:
+			*svref = newSV(0);
             Perl_croak(aTHX_ "Scalar have not this type!");
     }
 }
@@ -333,7 +337,7 @@ get_array(config_setting_t *settings, SV **svref)
 	if (settings == NULL) {
 		Perl_warn(aTHX_ "[WARN] Settings is null in get_array!");
 	}
-	SV *sv = newSV(0);
+	SV *sv;
     AV *av = newAV();
 	int settings_count = config_setting_length(settings);
 
@@ -386,7 +390,7 @@ get_group(config_setting_t *settings, SV **svref)
 	if (settings == NULL) {
 		Perl_warn(aTHX_ "[WARN] Settings is null in get_group!");
 	}
-	SV *sv = newSV(0);
+	SV *sv;
 	HV *hv = newHV();
 	int settings_count = config_setting_length(settings);
 
@@ -440,7 +444,7 @@ get_arrayvalue(config_setting_t *settings, AV *av)
 		Perl_warn(aTHX_ "[WARN] Settings is null in get_arrayvalue");
 		return 1;
 	}
-	SV *sv = newSV(0);
+	SV *sv;
 	int settings_count = config_setting_length(settings);
 	if (settings->type == CONFIG_TYPE_INT || settings->type == CONFIG_TYPE_INT64 || settings->type == CONFIG_TYPE_FLOAT
 			|| settings->type == CONFIG_TYPE_STRING || settings->type == CONFIG_TYPE_BOOL) {
@@ -495,7 +499,7 @@ get_hashvalue(config_setting_t *settings, HV *hv)
 		Perl_warn(aTHX_ "[WARN] Settings is null in get_hashvalue");
 		return 1;
 	}
-	SV *sv = newSV(0);
+	SV *sv;// = newSV(0);
 	int settings_count = config_setting_length(settings);
 	if (settings->type == CONFIG_TYPE_INT || settings->type == CONFIG_TYPE_INT64 || settings->type == CONFIG_TYPE_FLOAT
 			|| settings->type == CONFIG_TYPE_STRING || settings->type == CONFIG_TYPE_BOOL) {
@@ -618,7 +622,7 @@ libconfig_lookup_int64(conf, path)
     {
         config_lookup_int64(conf, path, &value);
         valueArrLen = sprintf(valueArr, "%lld", value);
-        RETVAL = newSVpv(valueArr, valueArrLen);
+        RETVAL = sv_2mortal(newSVpv(valueArr, valueArrLen));
     }
     OUTPUT:
         RETVAL
@@ -670,7 +674,7 @@ libconfig_lookup_value(conf, path)
     Conf::Libconfig conf
     const char *path
     PREINIT:
-        SV *sv = newSV(0);
+        SV *sv;
     CODE:
     {
 		get_value(conf, path, &sv);
@@ -690,7 +694,9 @@ libconfig_fetch_array(conf, path)
     {
         settings = config_lookup(conf, path);
         get_arrayvalue(settings, av);
-        RETVAL = av;
+//		ST(0) = sv_2mortal((SV *)av);
+        RETVAL = (AV *)sv_2mortal((SV *)av);
+//		XPUSHs(sv_2mortal((SV *)av));
     }
     OUTPUT:
         RETVAL
@@ -706,7 +712,7 @@ libconfig_fetch_hashref(conf, path)
     {
         settings = config_lookup(conf, path);
 		get_hashvalue(settings, hv);
-		RETVAL = hv;
+		RETVAL = (HV *)sv_2mortal((SV *)hv);
     }
     OUTPUT:
         RETVAL
@@ -823,11 +829,8 @@ libconfig_delete_node(conf, path)
     const char *path
     PREINIT:
         config_setting_t *settings;
-		config_setting_t *settings_item;
-		config_setting_t *settings_a;
 		char *key;
 		char parentpath[256];
-		int ret;
     CODE:
 	{
 		key = strrchr(path, '.') + 1;
@@ -929,7 +932,7 @@ libconfig_setting_get_item(setting, i)
         STRLEN itemBigintArrLen;
         long itemInt;
         int itemBool;
-        SV *sv = newSV(0);
+        SV *sv;
     CODE:
     {
         if ((itemInt = config_setting_get_int_elem(setting, i)))
@@ -943,6 +946,8 @@ libconfig_setting_get_item(setting, i)
             sv = newSVnv(itemFloat);
         else if ((itemChar = config_setting_get_string_elem(setting, i)))
             sv = newSVpvn(itemChar, strlen(itemChar));
+		else
+			sv = newSV(0);
         RETVAL = sv;
     }
     OUTPUT:
