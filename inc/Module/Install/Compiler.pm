@@ -2,14 +2,14 @@
 package Module::Install::Compiler;
 
 use strict;
-use Module::Install::Base;
-use File::Basename ();
+use File::Basename        ();
+use Module::Install::Base ();
 
-use vars qw{$VERSION $ISCORE @ISA};
+use vars qw{$VERSION @ISA $ISCORE};
 BEGIN {
-	$VERSION = '0.82';
+	$VERSION = '1.00';
+	@ISA     = 'Module::Install::Base';
 	$ISCORE  = 1;
-	@ISA     = qw{Module::Install::Base};
 }
 
 sub ppport {
@@ -50,7 +50,7 @@ sub cc_lib_paths {
 sub cc_lib_links {
 	my $self = shift;
 	$self->makemaker_args(
-		LIBS => join ' ', $self->makemaker_args->{LIBS}, map { "-l$_" } @_
+		LIBS => join ' ', @{$self->makemaker_args->{'LIBS'}}, map { "-l$_" } @_
 	);
 }
 
