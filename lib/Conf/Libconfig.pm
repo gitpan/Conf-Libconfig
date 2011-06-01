@@ -4,7 +4,7 @@ use 5.006001;
 use strict;
 use warnings;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 require XSLoader;
 XSLoader::load('Conf::Libconfig', $VERSION);
@@ -48,6 +48,7 @@ Conf::Libconfig - Perl extension for libconfig
   use Conf::Libconfig;
   my $self = new Conf::Libconfig;
   $self->read_file($cfg);
+  $self->read_string("test:{key = \"only for test!\";};");
   my $value = $self->lookup_value("abc.edf");
   print $value;
 
@@ -84,9 +85,17 @@ destruct.
 
 destruct and auto release memory.
 
+=head2 $self->read($buffer)
+
+read a handle buffer.
+
 =head2 $self->read_file ($file)
 
-read config file.
+read from a config file.
+
+=head2 $self->read_string ($string)
+
+read from a string.
 
 =head2 $self->write($buffer)
 
@@ -95,6 +104,14 @@ write to a handle buffer.
 =head2 $self->write_file($filename)
 
 write to a file.
+
+=head2 $self->get_include_dir()
+
+get a include directory, like @include './conf/config.cfg', and get a absolute path.
+
+=head2 $self->set_include_dir($path)
+
+set a include directory, you can search the content of @include in $path.
 
 =head2 $self->lookup_value ($path)
 
@@ -128,6 +145,10 @@ add a pair of key and value node to handle and return true if add successfully.
 
 modify new value to handle and return true if add successfully.
 
+=head2 $self->modify_boolscalar ($path, $value)
+
+modify new bool value to handle and return true if add successfully.
+
 =head2 $self->add_array ($path, $key, \@array)
 
 add array value to handle and return true if add successfully.
@@ -139,6 +160,10 @@ the same as B<add_array>, add list value to handle and return true if add succes
 =head2 $self->add_hash ($path, $key, \%hash)
 
 add hash value to handle and return true if add successfully.
+
+=head2 $self->add_boolhash ($path, $key, \%hash)
+
+add bool hash value to handle and return true if add successfully.
 
 =head2 $self->delete_node ($path)
 
